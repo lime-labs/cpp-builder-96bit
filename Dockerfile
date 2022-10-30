@@ -25,6 +25,9 @@ RUN yum install -y boost-devel boost-devel.i686 openssl-devel openssl-devel.i686
 # more libs
 RUN /app/install-grpc-cpprestsdk-vcpkg-etcd.sh
 
+# cleanup
+RUN yum clean all && rm -rf /var/cache/yum
+
 WORKDIR /code
 
 ENTRYPOINT [ "/app/entrypoint.sh" ]
