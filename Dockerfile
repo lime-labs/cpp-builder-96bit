@@ -2,7 +2,8 @@ FROM oraclelinux:7-slim
 
 RUN mkdir /app
 
-COPY entrypoint.sh install-grpc-cpprestsdk-vcpkg-etcd.sh /app/
+COPY .bashrc /root/
+COPY entrypoint.sh /app/
 
 RUN yum install -y oraclelinux-release-el7 oracle-softwarecollection-release-el7
 RUN /usr/bin/ol_yum_configure.sh
@@ -13,6 +14,8 @@ RUN yum install -y scl-utils
 RUN yum install -y https://repo.ius.io/ius-release-el7.rpm \
     https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
+RUN yum update -y && yum clean all && rm -rf /var/cache/yum
+
 RUN yum -y group install "Development Tools" && yum remove -y git
 
 RUN yum install -y devtoolset-8 devtoolset-8-libstdc++-devel devtoolset-8-libstdc++-devel.i686 which zip unzip tar bzip2 curl wget mc vim git236 cmake3 \
@@ -22,8 +25,11 @@ RUN yum install -y devtoolset-8 devtoolset-8-libstdc++-devel devtoolset-8-libstd
 # etcd dependencies
 RUN yum install -y boost-devel boost-devel.i686 openssl-devel openssl-devel.i686
 
-# more libs
-RUN /app/install-grpc-cpprestsdk-vcpkg-etcd.sh
+# create link from cmake to cmake3
+RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
+
+# vcpkg
+RUN cd /app && git clone https://github.com/Microsoft/vcpkg.git && ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 
 # cleanup
 RUN yum clean all && rm -rf /var/cache/yum
