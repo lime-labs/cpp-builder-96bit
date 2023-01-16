@@ -5,6 +5,12 @@ RUN mkdir /app
 COPY .bashrc /root/
 COPY entrypoint.sh /app/
 
+# Set the locale
+#RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8 
+
 RUN yum install -y oraclelinux-release-el7 oracle-softwarecollection-release-el7
 RUN /usr/bin/ol_yum_configure.sh
 RUN yum-config-manager --enable software_collections
